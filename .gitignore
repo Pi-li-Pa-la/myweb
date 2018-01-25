@@ -110,3 +110,6 @@ migrations/
 .DS_Store
 .idea/
 db.sqlite
+
+# myweb
+config.py

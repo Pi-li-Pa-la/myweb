@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, abort
 from models.User import User
+from utils import log
 
 
 main = Blueprint('user', __name__)
@@ -14,7 +15,32 @@ def index():
 def login():
     form = request.form
     u = User(form)
-    status, msg = u.valid()
-    print('status:', status)
-    print('msg:', msg)
+    # status, msg = u.valid()
+    # print('status:', status)
+    # print('msg:', msg)
     return redirect(url_for('.index'))
+
+
+@main.route('/register', methods=['GET'])
+def register():
+    return render_template('/user/register.html')
+
+
+@main.route('/signup', methods=['POST'])
+def signup():
+    form = request.form
+    u = form.get('username', '')
+    pwd = form.get('password', '')
+    pwd_ag = form.get('password_again', '')
+    r_code = form.get('register_code', '')
+    return redirect(url_for('.index'))
+
+
+@main.route('/confirm_username', methods=['GET','POST'])
+def confirm_u():
+    form = request.form
+    u = form.get('username', '')
+    print('111', User.query.filter_by(username=u).all())
+    if User.query.filter_by(username=u).all() == 0:
+        return 'OK'
+    return 'ok', 202
