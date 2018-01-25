@@ -5,7 +5,7 @@ import time
 import struct
 import os
 
-from openpyxl import Workbook, load_workbook
+# from openpyxl import Workbook, load_workbook
 from jinja2 import Environment, FileSystemLoader
 
 log_config = {
