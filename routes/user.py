@@ -8,7 +8,7 @@ main = Blueprint('user', __name__)
 
 @main.route('/', methods=['GET'])
 def index():
-    return render_template('/login.html')
+    return render_template('/user/login.html')
 
 
 @main.route('/login', methods=['POST'])
@@ -23,7 +23,7 @@ def login():
 
 @main.route('/register', methods=['GET'])
 def register():
-    return render_template('/register.html')
+    return render_template('/user/register.html')
 
 
 @main.route('/signup', methods=['POST'])
@@ -40,7 +40,6 @@ def signup():
 def confirm_u():
     form = request.form
     u = form.get('username', '')
-    print('111', User.query.filter_by(username=u).all())
     if User.query.filter_by(username=u).all() == 0:
         return 'OK'
     return 'ok', 202

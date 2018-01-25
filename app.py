@@ -61,8 +61,9 @@ def server():
     )
     app.run(**config)
 
-
 if __name__ == '__main__':
     configure_manager()
     configured_app()
     manager.run()
+elif __name__== 'app':
+    configured_app()
