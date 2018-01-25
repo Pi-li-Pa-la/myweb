@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<body>
+    <form action="/user/signup" method="post">
+        <h5>用&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" placeholder="username" name="username" onkeyup="confirm_username(this.value)"></h5>
+        <p><span id="u_txt"></span></p>
+        <h5>密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="password" placeholder="password" name="password"></h5>
+        <h5>再次输入密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="password" placeholder="password again" name="password_again"></h5>
+        <h5>注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" placeholder="register code" name="register_code"></h5>
+        <button>注册</button>
+    </form>
+</body>
+
+<script type="text/javascript">
+function confirm_username(str)
+{
+var xmlhttp;
+if (str.length<=5 )
+  {
+  document.getElementById("u_txt").innerHTML="用户名长度在8到32位之间";
+  return;
+  }
+else
+  {
+if (str.length >32)
+  {
+  document.getElementById("u_txt").innerHTML="用户名长度在8到32位之间";
+  return;
+  }
+else
+  {
+  document.getElementById("u_txt").innerHTML="";
+  }
+
+  xmlhttp=new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    document.getElementById("u_txt").innerHTML="用户名可以使用";
+    }
+  }
+  xmlhttp.open("POST", '/user/confirm_username',true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.send("username=str");
+}
+}
+</script>
+</html>
