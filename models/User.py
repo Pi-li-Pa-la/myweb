@@ -38,3 +38,13 @@ class User(db.Model, ModelMixin):
     #         msgs.append(message)
     #     status = (not valid_username) and valid_username_len and valid_password_len
     #     return status
+
+class RegisterCode(db.Model):
+    __tablename__ = 'register_code'
+    id = db.Column(db.Integer, primary_key=True)
+    value= db.Column(db.String(128))
+    remarks = db.Column(db.String(128))
+
+    def __init__(self, form):
+        self.value = form['value']
+        self.remarks = form['remarks']

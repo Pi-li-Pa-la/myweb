@@ -3,6 +3,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from models import db
 from routes.user import main as user_routes
+from routes.admin import main as admin_routes
 # import model
 
 
@@ -48,6 +49,7 @@ def configure_manager():
 def register_routes(app):
     # 在这个函数里import并注册蓝图
     app.register_blueprint(user_routes, url_prefix='/user')
+    app.register_blueprint(admin_routes, url_prefix='/admin')
 
 
 # 自定义的命令行命令用来运行服务器

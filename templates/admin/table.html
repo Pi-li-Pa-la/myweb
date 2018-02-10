@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tableName }}</title>
+</head>
+<body>
+<table border="1">
+    <caption>{{ tableName }}表</caption>
+    <tr>
+        {% for c in columnName %}
+        <th>{{ c }}</th>
+        {% endfor %}
+    </tr>
+</table>
+</body>
+</html>

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort
-from models.User import User
+from models.User import User, RegisterCode
 from utils import log
 
 
@@ -33,13 +33,30 @@ def signup():
     pwd = form.get('password', '')
     pwd_ag = form.get('password_again', '')
     r_code = form.get('register_code', '')
+
+    u_len = False
+    u_status = False
+    p_len = False
+    p_status = False
+    r_code_status = False
+
+    if (len(u) > 5) and (len(u) < 33):
+        u_len = True
+    if not User.query.filter_by(username=u).all():
+        u_status = True
+    if (len(pwd) > 8) and (len(pwd) < 128):
+        p_len = True
+    if pwd == pwd_ag:
+        p_status = True
+    if RegisterCode.query.filter_by(value=r_code).all():
+        r_code_status = True
     return redirect(url_for('.index'))
 
 
-@main.route('/confirm_username', methods=['GET','POST'])
+@main.route('/confirm_username', methods=['GET', 'POST'])
 def confirm_u():
     form = request.form
     u = form.get('username', '')
-    if User.query.filter_by(username=u).all() == 0:
+    if (u != '') and (not User.query.filter_by(username=u).all()):
         return 'OK'
-    return 'ok', 202
+    return 'OK', 202
