@@ -6,7 +6,13 @@
 </head>
 <body>
     <h1>噼里啪啦的主页</h1>
-    <a href="/user">登录</a>
-    <a href="/user/register">注册</a>
+    <div id="register" style="display:{{ register }}">
+        <a href="/user">登录</a>
+        <a href="/user/register">注册</a>
+    </div>
+
+    <div id="user" style="display:{{ welcome }}">
+        <h2>欢迎{{ username | default('可能是出bug了') }}</h2>
+    </div>
 </body>
 </html>

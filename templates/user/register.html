@@ -2,88 +2,246 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
     <title>注册</title>
 </head>
 <style>
-    #u_txt {
-        color: red;
+
+    #tip {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    display: none;
+    z-index: 9999;
+    min-width: 200px;
+    text-align: center;
     }
-    #u_txt2 {
-        color: blue;
+
+    #form {
+    position:absolute;
+    left:50%;
+    top:45%;
+    transform:translate(-50%,-50%);
     }
+
+    #usr, #pwd, #pwd_ag, #r_c {
+    width: 100%;
+    }
+
+    #usrtips, #pwdtips, #register_code_tips {
+    color: gray;
+    }
+
+    #title {
+    text-align: center;
+    }
+
 </style>
 <body>
-    <form action="/user/signup" method="post">
-        <h5>用&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" placeholder="username" name="username" onblur="confirm_username(this.value)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用户名长度在6到32位之间，且只能由字母、数字构成</h5>
-        <h5><span id="u_txt"></span></h5><h5><span id="u_txt2"></span></h5>
-        <h5>密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="pwd" type="password" placeholder="password" name="password" onblur="confirm_password(this.value)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密码长度须在8到128位之间</h5>
-        <h5>再次输入密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="pwd_ag" type="password" placeholder="password again" name="password_again" onblur="confirm_password(this.value)"></h5>
-        <h5><span id="p_txt"></span></h5>
-        <h5>注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" placeholder="register code" name="register_code"></h5>
-        <button>注册</button>
+
+    <h3 id="title">注册帐号</h3>
+
+    <form id="form" action="/user/signup" method="post">
+
+        <div class="form-group">
+            <label>用户名</label>
+            <input id="usr" class="form-control onlyNumAlpha" type="text" placeholder="username" name="username" onblur="confirm_username(this.value)">
+        </div>
+
+            <h6 id="usrtips">*用户名长度在6到32位之间，且只能由字母、数字构成</h6>
+
+        <div class="form-group">
+            <label>密码</label>
+            <input id="pwd" class="form-control" type="password" placeholder="password" name="password" onblur="confirm_password(this.value)">
+            <h6 id="pwdtips">*密码长度须在8到128位之间</h6>
+        </div>
+
+        <div class="form-group">
+            <label>再次输入密码</label>
+            <input id="pwd_ag" class="form-control" type="password" placeholder="password again" name="password_again" onblur="pwd_again(this.value)">
+        </div>
+
+        <div class="form-group">
+            <p></p>
+            <label>注册码</label>
+            <input id="r_c" class="form-control" type="text" placeholder="register code" name="register_code">
+            <h6 id="register_code_tips">*本站采用邀请注册制度，如需邀请码请放弃。</h6>
+        </div>
+
+            <p></p>
+            <button id="btn" disabled="disabled" class="btn btn-default">注册</button>
     </form>
+
+    {# 弹窗提示 #}
+    <strong id="tip"></strong>
 </body>
 
 <script type="text/javascript">
 
-function confirm_username(username)
-{
-var xmlhttp;
 var u_status = 0;
-
-if ((username.length<=5 && username.length > 0 ) || (username.length >32))
-  {
-  document.getElementById("u_txt").innerHTML="用户名长度在6到32位之间";
-  return;
-  }
-else
-  {
-  document.getElementById("u_txt").innerHTML="";
-
-  xmlhttp=new XMLHttpRequest();
-  xmlhttp.onreadystatechange=function()
-  {
-  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-    {
-    document.getElementById("u_txt2").innerHTML="用户名可以使用";
-    u_status = 1;
-    }
-  else if (xmlhttp.readuState==4 && xmlhttp.status==202)
-    {
-    document.getElementById("u_txt").innerHTML="用户名已被使用";
-    };
-  }
-  xmlhttp.open("POST", '/user/confirm_username', true);
-  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  xmlhttp.send("username="+username);
-  }
-}
-
-
-function confirm_password(str)
-{
 var p_status = 0;
+var p_ag_status = 0;
 
-if ((str.length < 8) && (str.length > 0))
-  {
-  document.getElementById("p_txt").innerHTML="密码至少需要8位";
-  }
-else if (str.length > 128)
-  {
-  document.getElementById("p_txt").innerHTML="密码过长，请控制其小于128位";
-  }
-else
-  {
-  document.getElementById("p_txt").innerHTML="";
-
-  pwd = document.getElementById("pwd").value
-  pwd_ag = document.getElementById("pwd_ag").value
-
-  if ((pwd = pwd_ag) && (pwd != ''))
+function confirm_username(username)
     {
-    p_status = 1;
+    var xmlhttp;
+    var u_name = $('#usr');
+    xmlhttp=new XMLHttpRequest();
+
+    if (username == '')
+        {
+        u_name.parent().attr('class', 'form-group');
+        u_status = 0;
+        disable_button();
+        }
+    else
+        {
+        xmlhttp.onreadystatechange=function()
+            {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                ShowSuccess(xmlhttp.responseText);
+                u_name.parent().attr('class', 'form-group has-success');
+                u_status = 1;
+                disable_button();
+                }
+            else if (xmlhttp.readyState==4 && xmlhttp.status==202)
+                {
+                ShowFailure(xmlhttp.responseText);
+                u_name.parent().attr('class', 'form-group has-error');
+                u_status = 0;
+                disable_button();
+                };
+            };
+            xmlhttp.open("POST", '/user/confirm_username', true);
+            xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xmlhttp.send("username="+username);
+            }
+        }
+
+
+function confirm_password(password)
+    {
+    var pwd = $('#pwd');
+    xmlhttp=new XMLHttpRequest();
+
+    if (password == '')
+        {
+        pwd.parent().attr('class', 'form-group');
+        p_status = 0;
+        disable_button();
+        }
+    else
+        {
+        xmlhttp.onreadystatechange=function()
+            {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                ShowSuccess(xmlhttp.responseText);
+                pwd.parent().attr('class', 'form-group has-success');
+                p_status = 1;
+                pwd_again($('#pwd_ag').val());
+                }
+            else if (xmlhttp.readyState==4 && xmlhttp.status==202)
+                {
+                ShowFailure(xmlhttp.responseText);
+                pwd.parent().attr('class', 'form-group has-error');
+                p_status =0;
+                disable_button();
+                };
+            }
+        xmlhttp.open("POST", '/user/confirm_password', true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("password="+password);
+        }
     }
-  }
-}
+
+
+function pwd_again(pwd_ag)
+    {
+    var pwd = $('#pwd');
+    var p_ag = $('#pwd_ag')
+
+    if (pwd_ag == '')
+        {
+            p_ag.parent().attr('class', 'form-group');
+            p_ag_status = 0;
+            disable_button();
+        }
+
+    else if( (p_status == 1) && (pwd_ag == pwd.val()) )
+        {
+            p_ag.parent().attr('class', 'form-group has-success');
+            p_ag_status = 1;
+            disable_button();
+        }
+    else if ( (p_status == 1) && (pwd_ag != pwd.val()) )
+        {
+            ShowFailure('两次输入的密码不一致，请重新输入');
+            p_ag.parent().attr('class', 'form-group has-error');
+            p_ag_status = 0;
+            disable_button();
+        }
+    else if (p_status != 1)
+        {
+            ShowFailure("请检查'密码'项是否填写正确");
+            p_ag.parent().attr('class', 'form-group has-error');
+            p_ag_status = 0;
+            disable_button();
+        }
+    }
+
+
+function disable_button()
+    {
+    var button = $('#btn')
+    var pwd = $('#pwd').val()
+    var pwd_ag = $('#pwd_ag').val()
+
+    if (u_status == 1 && p_status == 1 && p_ag_status ==1)
+        {
+            button.removeAttr('disabled');
+        }
+    else
+        {
+            button.attr('disabled', 'disabled');
+        }
+    }
+
+// tip是提示信息，type:'success'是成功信息，'danger'是失败信息,'info'是普通信息,'warning'是警告信息
+// http://www.cnblogs.com/hambert/p/4076027.html
+function ShowTip(tip, type)
+    {
+    var $tip = $('#tip');
+    $tip.stop(true).prop('class', 'alert alert-' + type).text(tip).css('margin-left', - $tip.outerWidth() / 2).fadeIn(500).delay(2000).fadeOut(500);
+    }
+
+function ShowMsg(msg)
+    {
+    ShowTip(msg, 'info');
+    }
+
+function ShowSuccess(msg)
+    {
+    ShowTip(msg, 'success');
+    }
+
+function ShowFailure(msg)
+    {
+    ShowTip(msg, 'danger');
+    }
+
+function ShowWarn(msg)
+    {
+    ShowTip(msg, 'warning');
+//    if ($focus) {
+//　　　　 $focus.focus();
+//    　　if (clear) $focus.val('');
+//　 　}
+    return false;
+    }
+
 </script>
 </html>

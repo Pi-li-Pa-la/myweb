@@ -11,5 +11,4 @@ db_config = {
     'password': '8589934592',
     'db': 'myweb',
     'charset': 'utf8mb4',
-
 }

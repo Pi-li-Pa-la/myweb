@@ -4,6 +4,7 @@ from flask_script import Manager
 from models import db
 from routes.user import main as user_routes
 from routes.admin import main as admin_routes
+from routes.user import current_user
 # import model
 
 
@@ -13,7 +14,11 @@ manager = Manager(app)
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    u = current_user()
+    if u:
+        username = u.username
+        return render_template('index.html', register='none', welcome='block', username=username)
+    return render_template('index.html', register='block', welcome='none', username='')
 
 
 def configured_app():
@@ -63,9 +68,15 @@ def server():
     )
     app.run(**config)
 
+
+@manager.command
+def drop_db():
+    db.drop_all()
+
 if __name__ == '__main__':
     configure_manager()
     configured_app()
     manager.run()
-elif __name__== 'app':
+
+elif __name__ == 'app':
     configured_app()
