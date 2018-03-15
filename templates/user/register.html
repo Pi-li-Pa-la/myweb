@@ -14,7 +14,6 @@
     top: 50px;
     left: 50%;
     display: none;
-    z-index: 9999;
     min-width: 200px;
     text-align: center;
     }
@@ -38,16 +37,20 @@
     text-align: center;
     }
 
+    .form-group {
+     margin-top:25px
+     }
+
 </style>
 <body>
 
     <h3 id="title">注册帐号</h3>
 
-    <form id="form" action="/user/signup" method="post">
+    <form id="form" action="/user/register" method="post">
 
         <div class="form-group">
             <label>用户名</label>
-            <input id="usr" class="form-control onlyNumAlpha" type="text" placeholder="username" name="username" onblur="confirm_username(this.value)">
+            <input id="usr" class="form-control" type="text" placeholder="username" name="username" onblur="confirm_username(this.value)">
         </div>
 
             <h6 id="usrtips">*用户名长度在6到32位之间，且只能由字母、数字构成</h6>
@@ -67,7 +70,7 @@
             <p></p>
             <label>注册码</label>
             <input id="r_c" class="form-control" type="text" placeholder="register code" name="register_code">
-            <h6 id="register_code_tips">*本站采用邀请注册制度，如需邀请码请放弃。</h6>
+            <h6 id="register_code_tips">*本站采用邀请注册制度，若无邀请码请放弃。</h6>
         </div>
 
             <p></p>
@@ -197,8 +200,6 @@ function pwd_again(pwd_ag)
 function disable_button()
     {
     var button = $('#btn')
-    var pwd = $('#pwd').val()
-    var pwd_ag = $('#pwd_ag').val()
 
     if (u_status == 1 && p_status == 1 && p_ag_status ==1)
         {
@@ -242,6 +243,15 @@ function ShowWarn(msg)
 //　 　}
     return false;
     }
+
+$(document).ready(function(){
+    var msg = '{{ message }}';
+    if (msg != '')
+        {
+        ShowMsg( msg );
+        }
+    });
+
 
 </script>
 </html>

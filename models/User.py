@@ -22,8 +22,6 @@ class User(db.Model, ModelMixin):
         if not re.match("^[A-Za-z0-9_]*$", u):
             # 这个正则表达式的意思是判断u是否由规定字符串构成
             return '用户名只能由字母、数字及下划线组成', 202
-        if User.query.filter_by(username=u.lower()).all():
-            return '用户名已被占用', 202
         return '用户名可以使用', 200
 
     def valid_password(self):
@@ -32,7 +30,7 @@ class User(db.Model, ModelMixin):
             return '密码长度应在8到128位之间', 202
         # 利用正则表达式达到验证账户名和密码是否包含非法字符
         # https://codeday.me/bug/20170721/43023.html
-        if not re.match("^[-A-Za-z0-9_+=~!@#$%^&;:?<>\[\]{}(),./]*$", p):
+        if not re.match("^[-A-Za-z0-9_+=~!@#$%^&;:?<>\[\]{}(),./*]*$", p):
             return "密码只能由数字、字母及_-/+=~!@#$%^&;:?<>,.[]{}()组成", 202
         return '密码可以使用', 200
 

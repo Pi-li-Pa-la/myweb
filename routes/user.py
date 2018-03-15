@@ -1,34 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, abort, make_response, session
+from flask import Blueprint, render_template, request, redirect, url_for, abort, session
 from models.User import User, RegisterCode
-from functools import wraps
-from utils import log
-import re
+from universal_func import current_user, login_required
 
 main = Blueprint('user', __name__)
 
 
-def current_user():
-    # 通过cookie验证用户登录状态
-    uid = session.get('user_id')
-    if uid is not None:
-        u = User.query.get(int(uid))
-        return u
-    return None
-
-
-def login_required(f):
-    @wraps(f)
-    def func(*args, **kwargs):
-        if current_user() is None:
-            # 用户未登录，重定向到登录页面
-            return redirect(url_for('.index', next=request.url))
-        else:
-            return f(*args, **kwargs)
-    return func
-
-
 @main.route("/", methods=["GET"])
 def index():
+    if current_user():
+        u_id = current_user().id
+        return redirect(url_for('.profile', id=u_id))
     msg = ''
     next_url = request.args.get('next', '')
     if request.referrer == request.url:
@@ -64,37 +45,39 @@ def login():
     return redirect(url_for('.index'))
 
 
-@main.route('/register', methods=['GET'])
+@main.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('/user/register.html')
+    if request.method.upper() == "GET":
+        return render_template('/user/register.html')
 
+    elif request.method.upper() == "POST":
+        form = request.form
+        u = User(form)
+        pwd = form.get('password', 'pwd')
+        pwd_ag = form.get('password_again', 'pwd_ag')
+        r_code = form.get('register_code', '')
 
-@main.route('/signup', methods=['POST'])
-def signup():
-    form = request.form
-    u = User(form)
-    pwd = form.get('password', 'pwd')
-    pwd_ag = form.get('password_again', 'pwd_ag')
-    r_code = form.get('register_code', '')
+        msg = u.valid_username()
+        if msg[1] == 202:
+            return render_template('/user/register.html', message=msg[0])
 
-    msg = u.valid_username()
-    if msg[1] == 202:
-        return render_template('/user/register.html', message=msg[0])
+        msg = u.valid_password()
+        if msg[1] == 202:
+            return render_template('/user/register.html', message=msg[0])
+        if pwd != pwd_ag:
+            return render_template('/user/register.html', message='两次输入的密码不一致')
 
-    msg = u.valid_password()
-    if msg[1] == 202:
-        return render_template('/user/register.html', message=msg[0])
-    if pwd != pwd_ag:
-        return render_template('/user/register.html', message='两次输入的密码不一致')
-
-    u.save()
-    return render_template('/user/register.html', message='注册成功')
+        u.save()
+        return render_template('/user/register.html', message='注册成功')
 
 
 @main.route('/confirm_username', methods=['GET', 'POST'])
 def confirm_u():
+    # 确认需注册的帐号是否合法，是否被占用
     form = request.form
     u = User(form)
+    if u.query.filter_by(username=u.username.lower()).all():
+        return '用户名已被占用', 202
     return u.valid_username()
 
 
@@ -103,3 +86,12 @@ def confirm_pwd():
     form = request.form
     u = User(form)
     return u.valid_password()
+
+
+@main.route('/valid_username', methods=['GET', 'POST'])
+def valid_username():
+    form = request.form
+    u = User(form)
+    if u.username == 'admin':
+        return '', 200
+    return u.valid_username()

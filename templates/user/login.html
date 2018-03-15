@@ -9,7 +9,7 @@
 </head>
 
 <style>
-    #tip {
+#tip {
     position: absolute;
     top: 50px;
     left: 50%;
@@ -18,13 +18,38 @@
     min-width: 200px;
     text-align: center;
     }
+
+#form {
+    width: 25%;
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    }
+
+#title {
+    text-align: center;
+    }
+
 </style>
 
 <body>
-    <form action="{{ url }}" method="post">
-        <h5>用户名:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" placeholder="username" name="username"></h5>
-        <h5>密&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="password" placeholder="password" name="password"></h5>
-        <button>确定</button>
+
+    <form id="form" action="{{ url }}" method="post">
+
+        <h3 id="title">登录</h3>
+
+        <div class="form-group">
+            <label>用户名</label>
+            <input id="usr" class="form-control" type="text" placeholder="username" name="username" onblur="valid_username(this.value)">
+        </div>
+
+        <div class="form-group">
+            <label>密码</label>
+            <input id="pwd" class="form-control" type="password" placeholder="password" name="password" onblur="confirm_password(this.value)">
+        </div>
+
+        <button id="btn" class="btn btn-default" disabled="disabled">确定</button>
     </form>
 
     {# 弹窗提示 #}
@@ -48,5 +73,95 @@ $(document).ready(function(){
         }
     });
 
+var u_status = 0;
+var p_status = 0;
+
+function valid_username(username)
+    {
+    var xmlhttp;
+    var u_name = $('#usr');
+    xmlhttp=new XMLHttpRequest();
+
+    if (username == '')
+        {
+        u_name.parent().attr('class', 'form-group');
+        u_status = 0;
+        disable_button();
+        }
+    else
+        {
+        xmlhttp.onreadystatechange=function()
+            {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                u_name.parent().attr('class', 'form-group has-success');
+                u_status = 1;
+                disable_button();
+                }
+            else if (xmlhttp.readyState==4 && xmlhttp.status==202)
+                {
+                <!--ShowTip(xmlhttp.responseText, 'danger')-->
+                u_name.parent().attr('class', 'form-group has-error');
+                u_status = 0;
+                disable_button();
+                };
+            };
+        xmlhttp.open("POST", '/user/valid_username', true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("username="+username);
+        }
+    }
+
+function confirm_password(password)
+    {
+    var pwd = $('#pwd');
+    xmlhttp=new XMLHttpRequest();
+
+    if (password == '')
+        {
+        pwd.parent().attr('class', 'form-group');
+        p_status = 0;
+        disable_button();
+        }
+    else
+        {
+        xmlhttp.onreadystatechange=function()
+            {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                pwd.parent().attr('class', 'form-group has-success');
+                p_status = 1;
+                disable_button();
+                }
+            else if (xmlhttp.readyState==4 && xmlhttp.status==202)
+                {
+                <!--ShowTip(xmlhttp.responseText, 'danger')-->
+                pwd.parent().attr('class', 'form-group has-error');
+                p_status =0;
+                disable_button();
+                };
+            }
+        xmlhttp.open("POST", '/user/confirm_password', true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("password="+password);
+        }
+    }
+
+
+function disable_button()
+    {
+    var button = $('#btn')
+
+    if (u_status == 1 && p_status == 1)
+        {
+            button.removeAttr('disabled');
+        }
+    else
+        {
+            button.attr('disabled', 'disabled');
+        }
+    }
+
 </script>
+
 </html>

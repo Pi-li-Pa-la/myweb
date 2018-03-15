@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <title>{{ tableName }}</title>
+</head>
+
+<style>
+#tip {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    display: none;
+    z-index: 9999;
+    min-width: 200px;
+    text-align: center;
+    }
+#form {
+    width: 25%;
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    }
+
+#title {
+    text-align: center;
+    }
+</style>
+
+<body>
+    <form id="form" action="/admin/db/insert/{{ tableName }}" method="post">
+
+        <h3 id="title">插入数据</h3>
+
+        {% for c in columns %}
+        <div class="form-group">
+            <label>{{ c['COLUMN_NAME'] }}</label>
+            <input id="column_name" class="form-control" name="{{ c['COLUMN_NAME'] }}" type="text">
+        </div>
+        {% endfor %}
+
+        <input hidden="hidden" name="csrf" value="{{ csrfToken }}">
+        <button class="btn btn-default">确定</button>
+    </form>
+
+    {# 弹窗提示 #}
+    <strong id="tip"></strong>
+
+</body>
+
+<script>
+// tip是提示信息，type:'success'是成功信息，'danger'是失败信息,'info'是普通信息,'warning'是警告信息
+// http://www.cnblogs.com/hambert/p/4076027.html
+function ShowTip(tip, type)
+    {
+    var $tip = $('#tip');
+    $tip.stop(true).prop('class', 'alert alert-' + type).text(tip).css('margin-left', - $tip.outerWidth() / 2).fadeIn(500).delay(2000).fadeOut(500);
+    }
+
+$(document).ready(function(){
+    var msg = '{{ msg }}';
+    if (msg != '')
+        {
+        ShowTip(msg, 'danger')
+        }
+    });
+
+</script>
+</html>
