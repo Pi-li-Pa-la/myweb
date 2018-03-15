@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import Blueprint, render_template, request, redirect, url_for, abort, session
 from models.User import User, RegisterCode
 from universal_func import current_user, login_required
@@ -98,4 +100,5 @@ def valid_username():
     u = User(form)
     if u.username == 'admin':
         return '', 200
+    log('valid_username: ', form, u.valid_username())
     return u.valid_username()
