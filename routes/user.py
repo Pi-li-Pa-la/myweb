@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort, session
 from models.User import User, RegisterCode
 from universal_func import current_user, login_required
+from utils import log
 
 main = Blueprint('user', __name__)
 
@@ -26,6 +27,7 @@ def index():
 @main.route('/<int:id>', methods=["GET"])
 @login_required
 def profile(id):
+    log('referrer: ', request.referrer)
     u = current_user()
     if u.id != id:
         return abort(404)
@@ -68,7 +70,9 @@ def register():
             return render_template('/user/register.html', message='两次输入的密码不一致')
 
         u.save()
-        return render_template('/user/register.html', message='注册成功')
+        u = User.query.filter_by(username=u.username).first()
+        session['user_id'] = u.id
+        return redirect(url_for('.profile', id=u.id))
 
 
 @main.route('/confirm_username', methods=['GET', 'POST'])
