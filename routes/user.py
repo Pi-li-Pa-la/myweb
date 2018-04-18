@@ -15,7 +15,8 @@ def index():
         return redirect(url_for('.profile', id=u_id))
     msg = ''
     next_url = request.args.get('next', '')
-    if request.referrer == request.url:
+    # 这个条件判断的意思是，如果是由自己跳转来的
+    if (request.referrer is not None) and (request.referrer.split('?')[0] == request.url):
         msg="帐号或密码错误，请重新输入"
     elif (not current_user()) & (next_url != ''):
         msg="进行此操作前请先登录"

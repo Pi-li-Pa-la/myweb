@@ -1,12 +1,11 @@
 from flask import Flask, render_template
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from models import db
 from routes.user import main as user_routes
 from routes.admin import main as admin_routes
 from routes.user import current_user
-# import model
 
+from models import db
 
 app = Flask(__name__)
 manager = Manager(app)
@@ -64,7 +63,7 @@ def server():
     config = dict(
         debug=True,
         host='0.0.0.0',
-        port=3000,
+        port=3001,
     )
     app.run(**config)
 

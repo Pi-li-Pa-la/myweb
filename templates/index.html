@@ -4,8 +4,30 @@
     <meta charset="UTF-8">
     <title>主页</title>
 </head>
+
+<style>
+
+#test {
+    position: fixed;
+    background-color: rgba(0,255,255,0.87);
+    height: 96px;
+    width: 1200px;
+    border: 100px;
+
+    }
+
+#title {
+    padding: 200px 0px 0px;
+    }
+
+</style>
+
 <body>
-    <h1>噼里啪啦的主页</h1>
+    <header id="test">
+        1234
+    </header>
+
+    <h1 id="title" >噼里啪啦的主页</h1>
     <div id="register" style="display:{{ register }}">
         <a href="/user">登录</a>
         <a href="/user/register">注册</a>
@@ -14,5 +36,7 @@
     <div id="user" style="display:{{ welcome }}">
         <h2>欢迎{{ username | default('可能是出bug了') }}</h2>
     </div>
+
+
 </body>
 </html>

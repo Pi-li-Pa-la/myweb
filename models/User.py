@@ -9,11 +9,13 @@ class User(db.Model, ModelMixin):
     username = db.Column(db.String(32))
     password = db.Column(db.String(64))
     salt = db.Column(db.String(64))
+    public_key = db.Column(db.String(1024))
 
     def __init__(self, form):
         self.username = form.get('username', '')
         self.password = form.get('password', '')
         self.salt = form.get('salt', self.make_salt())
+        self.public_key = form.get("public_key", "")
 
     def valid_username(self):
         u = self.username

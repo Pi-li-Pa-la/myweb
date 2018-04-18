@@ -148,7 +148,7 @@ def update_data(table_name):
         return render_template('/admin/db_update.html', tableName=table_name, columns=col_info, row=row[0],
                                csrfToken=csrf_token)
 
-    # 当请求插入数据时
+    # 当请求更新数据时
     elif request.method.upper() == 'POST':
         form = request.form
         if not valid_csrf(form['csrf'], username):
