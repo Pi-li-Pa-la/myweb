@@ -18,4 +18,3 @@ class EncryptAccount(db.Model, ModelMixin):
     def __init__(self, form):
         self.username = form.get("username", "")
         self.aes_password = form.get("aes_password", "")
-
